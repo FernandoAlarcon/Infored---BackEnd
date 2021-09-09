@@ -15,13 +15,23 @@ class ProductosController extends Controller
     public function index(Request $request)
     {
         try {
-            $data = $request->input('data');
-            $productos = Productos::join( 'categorias AS C', 'C.id','=','productos.categoria' )
+            $data     = $request->input('data');
+            $cantidad = $request->input('cantidad');
+            if(!isset($cantidad)){
+                $cantidad = 5;
+            }
+            $productos = Productos::
+            join( 'categorias AS C', 'C.id','=','productos.categoria' )
             ->where( 'productos.nombre', 'LIKE','%'.$data.'%' )
             ->orWhere( 'productos.descripcion', 'LIKE','%'.$data.'%' )
             ->orWhere( 'productos.peso', 'LIKE','%'.$data.'%' )
             ->orWhere( 'C.nombre','LIKE','%'.$data.'%' )
-            ->paginate(5);
+            ->select([
+                '*',
+                'C.id AS IdCategoria',
+                'productos.id AS id'
+            ])
+            ->paginate($cantidad);
 
 
             return [
@@ -36,73 +46,72 @@ class ProductosController extends Controller
                 'productos' => $productos
             ];
         } catch (\Exception $e) {
-			return $this->capturar($e, 'Error al consultar listados de productos');
-		}
+			       return $this->capturar($e, 'Error al consultar listados de productos');
+		    }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        try {
+
+          $this->validate($request, [
+            'nombre'    => 'required',
+            'peso'      => 'required',
+            'precio'    => 'required',
+            'categoria' => 'required'
+        ]);
+
+          $Productos = new Productos();
+          $Productos->nombre    = $request->input('nombre');
+          $Productos->descripcion = $request->input('descripcion');
+          $Productos->peso           = $request->input('peso');
+          $Productos->precio          = $request->input('precio');
+          $Productos->categoria          = $request->input('categoria');
+          $Productos->save();
+
+          if($Productos){
+               $resultado = true;
+          }else{
+               $resultado = false;
+          }
+
+          return  [
+               'succes' => $resultado
+          ];
+
+        }  catch (\Exception $e) {
+			       return $this->capturar($e, 'Error al guardar productos');
+		    }
+
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Productos  $productos
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Productos $productos)
-    {
-        //
+    public function update(Request $request, $id)
+    {    
+       
+       $Productos = Productos::find($id);
+       $Productos->nombre      = $request->input('nombre');
+       $Productos->descripcion = $request->input('descripcion');
+       $Productos->peso        = $request->input('peso');
+       $Productos->precio      = $request->input('precio');
+       $Productos->categoria   = $request->input('categoria');
+
+       //return $Productos;
+       $Productos->save();
+       
+       if(isset($Productos)){
+            $data = [ 'succes' => true ];
+       }else{
+            $data = [ 'succes' => false ];
+       }
+
+       return $data;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Productos  $productos
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Productos $productos)
-    {
-        //
-    }
+   public function destroy($id)
+   {
+       $Productos = Productos::find($id);
+       $Productos->delete();
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Productos  $productos
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Productos $productos)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Productos  $productos
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Productos $productos)
-    {
-        //
-    }
+       return;
+   }
 }

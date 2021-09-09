@@ -14,7 +14,18 @@ class CategoriasController extends Controller
      */
     public function index()
     {
-        //
+        $categories = Categorias::select('*')->where('categoria_padre','=','')->paginate(5);
+        return [
+            'pagination' => [
+                'total'         => $categories->total(),
+                'current_page'  => $categories->currentPage(),
+                'per_page'      => $categories->perPage(),
+                'last_page'     => $categories->lastPage(),
+                'from'          => $categories->firstItem(),
+                'to'            => $categories->lastItem(),
+            ],
+            'categories' => $categories
+        ];
     }
 
     /**

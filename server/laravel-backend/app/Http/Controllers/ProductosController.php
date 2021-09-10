@@ -7,11 +7,7 @@ use Illuminate\Http\Request;
 
 class ProductosController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function index(Request $request)
     {
         try {
@@ -21,14 +17,15 @@ class ProductosController extends Controller
                 $cantidad = 5;
             }
             $productos = Productos::
-            join( 'categorias AS C', 'C.id','=','productos.categoria' )
+            join('categorias AS C', 'C.id','=','productos.categoria' )
             ->where( 'productos.nombre', 'LIKE','%'.$data.'%' )
             ->orWhere( 'productos.descripcion', 'LIKE','%'.$data.'%' )
-            ->orWhere( 'productos.peso', 'LIKE','%'.$data.'%' )
+            ->orWhere( 'productos.precio', 'LIKE','%'.$data.'%' )
             ->orWhere( 'C.nombre','LIKE','%'.$data.'%' )
             ->select([
                 '*',
                 'C.id AS IdCategoria',
+                'C.nombre AS categoria',
                 'productos.id AS id'
             ])
             ->paginate($cantidad);
@@ -52,21 +49,21 @@ class ProductosController extends Controller
 
     public function store(Request $request)
     {
-        try {
+        try {   
 
-          $this->validate($request, [
-            'nombre'    => 'required',
-            'peso'      => 'required',
-            'precio'    => 'required',
+       
+        $this->validate($request, [
+            'nombre'    => 'required', 
+            'cantidad'  => 'required',
             'categoria' => 'required'
         ]);
 
           $Productos = new Productos();
-          $Productos->nombre    = $request->input('nombre');
+          $Productos->nombre      = $request->input('nombre');
           $Productos->descripcion = $request->input('descripcion');
-          $Productos->peso           = $request->input('peso');
-          $Productos->precio          = $request->input('precio');
-          $Productos->categoria          = $request->input('categoria');
+          $Productos->cantidad    = $request->input('cantidad');
+          $Productos->precio      = $request->input('precio');
+          $Productos->categoria   = $request->input('categoria');
           $Productos->save();
 
           if($Productos){
@@ -81,37 +78,43 @@ class ProductosController extends Controller
 
         }  catch (\Exception $e) {
 			       return $this->capturar($e, 'Error al guardar productos');
-		    }
+		}
 
     }
 
     public function update(Request $request, $id)
     {    
-       
-       $Productos = Productos::find($id);
-       $Productos->nombre      = $request->input('nombre');
-       $Productos->descripcion = $request->input('descripcion');
-       $Productos->peso        = $request->input('peso');
-       $Productos->precio      = $request->input('precio');
-       $Productos->categoria   = $request->input('categoria');
+        try {
+                $Productos = Productos::find($id);
+                $Productos->nombre      = $request->input('nombre');
+                $Productos->descripcion = $request->input('descripcion');
+                $Productos->cantidad    = $request->input('cantidad');
+                $Productos->precio      = $request->input('precio');
+                $Productos->categoria   = $request->input('categoria');
+ 
+                $Productos->save();
+                
+                if(isset($Productos)){
+                        $data = [ 'succes' => true ];
+                }else{
+                        $data = [ 'succes' => false ];
+                }
 
-       //return $Productos;
-       $Productos->save();
-       
-       if(isset($Productos)){
-            $data = [ 'succes' => true ];
-       }else{
-            $data = [ 'succes' => false ];
-       }
-
-       return $data;
+                return $data;
+        }  catch (\Exception $e) {
+            return $this->capturar($e, 'Error al actualizar Producto');
+        }
     }
 
-   public function destroy($id)
-   {
-       $Productos = Productos::find($id);
-       $Productos->delete();
+    public function destroy($id)
+    {   
+        try {
+            $Productos = Productos::find($id);
+            $Productos->delete();
 
-       return;
-   }
+            return;
+        }  catch (\Exception $e) {
+            return $this->capturar($e, 'Error al eliminar Producto');
+        }
+    }
 }

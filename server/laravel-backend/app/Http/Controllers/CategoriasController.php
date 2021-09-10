@@ -7,14 +7,14 @@ use Illuminate\Http\Request;
 
 class CategoriasController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $categories = Categorias::select('*')->where('categoria_padre','=','')->paginate(5);
+  
+    public function index(Request $request)
+    {   
+        $Data       = trim($request->get('data'));
+        $categories = Categorias::select('*')->where('nombre','LIKE','%'.$Data.'%')
+        ->orWhere('descripcion','LIKE','%'.$Data.'%')  
+        ->orderBy('id', 'DESC')      
+        ->paginate(5);
         return [
             'pagination' => [
                 'total'         => $categories->total(),
@@ -27,70 +27,72 @@ class CategoriasController extends Controller
             'categories' => $categories
         ];
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function store(Request $request)
     {
-        //
-    }
+        try {
+            $this->validate($request, [
+                'nombre'     => 'required',  
+            ]);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Categorias  $categorias
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Categorias $categorias)
-    {
-        //
-    }
+            $Categoria = new Categorias();
+            $Categoria->nombre      = $request->input('nombre');
+            $Categoria->descripcion = $request->input('descripcion'); 
+            $Categoria->save();
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Categorias  $categorias
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Categorias $categorias)
-    {
-        //
-    }
+            if($Categoria){
+                $resultado = true;
+           }else{
+                $resultado = false;
+           }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Categorias  $categorias
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Categorias $categorias)
-    {
-        //
-    }
+           return  [
+                'succes' => $resultado
+            ];
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Categorias  $categorias
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Categorias $categorias)
-    {
-        //
+        }  catch (\Exception $e) {
+                    return $this->capturar($e, 'Error al guardar Categoria');
+        }
     }
+ 
+    public function update(Request $request, $id)
+    {
+        try {
+            $this->validate($request, [
+                'nombre'      => 'required', 
+                'descripcion' => 'required'
+            ]);
+
+            $Categoria = Categorias::find($id);
+            $Categoria->nombre      = $request->input('nombre');
+            $Categoria->descripcion = $request->input('descripcion'); 
+            $Categoria->save();
+
+            if($Categoria){
+                $resultado = true;
+           }else{
+                $resultado = false;
+           }
+
+           return  [
+                'succes' => $resultado
+            ];
+
+        }  catch (\Exception $e) {
+            return $this->capturar($e, 'Error al actualizar Categoria');
+        }
+    }
+  
+    public function destroy($id,Categorias $categorias)
+    {   
+        try {
+            $categorias = Categorias::find($id);
+            $categorias->delete();
+            return;
+        }  catch (\Exception $e) {
+            return $this->capturar($e, 'Error al eliminar Categoria');
+        }
+
+    }
+    
 }

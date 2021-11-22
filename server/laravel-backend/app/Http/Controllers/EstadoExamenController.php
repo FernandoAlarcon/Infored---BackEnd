@@ -43,9 +43,8 @@ class EstadoExamenController extends Controller
                                             //'E.fecha_inicio AS date',
                                             'TE.nombre AS title',                                        
                                             DB::raw("DATE_FORMAT(E.fecha_inicio, '%a %b %c %Y %H-%i-%s') AS start" ),
+                                            DB::raw("DATE_FORMAT(E.fecha_fin,    '%D %M %n %Y %H-%i-%s') AS end"   ),
                                             
-                                            //DB::raw("DATE_FORMAT(E.fecha_fin,    '%D %M %n %Y %H-%i-%s') AS end"   ),
-
                                             'estado_examen.color AS color'
 
                                             //'E.fecha_fin',
@@ -73,9 +72,8 @@ class EstadoExamenController extends Controller
                                             //'E.fecha_inicio AS date',
                                             'TE.nombre AS title',                                        
                                             DB::raw("DATE_FORMAT(E.fecha_inicio, '%a %b %c %Y %H-%i-%s') AS start" ),
-
-                                            //DB::raw("DATE_FORMAT(E.fecha_fin,    '%D %M %n %Y %H-%i-%s') AS end"   ),
-
+                                            DB::raw("DATE_FORMAT(E.fecha_fin,    '%D %M %n %Y %H-%i-%s') AS end"   ),
+                                            
                                             'estado_examen.color AS color'
                                             //'E.fecha_fin',
                                             //'estado_examen.nombre AS estado',                                        
@@ -98,10 +96,11 @@ class EstadoExamenController extends Controller
                                             ->select(
                                             //'E.id AS IdExamen',
                                             //'E.fecha_inicio AS date',
-                                            'TE.nombre AS title',                                         
-                                            //DB::raw("DATE_FORMAT(E.fecha_inicio, '%a %b %c %Y %H-%i-%s') AS start" ),
-                                            'E.fecha_inicio AS start',
-                                            
+                                            'TE.nombre AS title',                                        
+                                            // DB::raw("DATE_FORMAT(E.fecha_inicio, '%a %b %c %Y %H-%i-%s') AS start" ),
+                                            // DB::raw("DATE_FORMAT(E.fecha_fin,    '%D %M %n %Y %H-%i-%s') AS end"   ),
+                                            DB::raw("DATE_FORMAT(E.fecha_inicio, '%Y-%m-%d %H:%i:%s') AS start" ),
+                                            DB::raw("DATE_FORMAT(E.fecha_fin,    '%Y-%m-%d %H:%i:%s') AS end"   ),
                                             'estado_examen.color AS color'
 
                                             //'E.fecha_fin',
@@ -215,7 +214,7 @@ class EstadoExamenController extends Controller
                                                 ->join('personas     AS P2',   'E.tecnico_id',        '=',  'P2.id')
                                                 ->join('personas     AS P3',   'E.paciente_id',       '=',  'P3.id')
 
-                                                ->join('users        AS US',   'US.id',                          '=', 'P1.user_id') 
+                                                ->join('users        AS US',   'US.id',                '=', 'P1.user_id') 
                                                 ->where('US.id','=',$id_user) 
                                                 ->where(static function ($query) use ($data) {
                                                     $query->where('P3.apellidos'   , 'LIKE', "%{$data}%")
@@ -230,6 +229,7 @@ class EstadoExamenController extends Controller
                                                           ->orWhere('P3.dni'       , 'LIKE', "%{$data}%")
                                                           ->orWhere('P3.correo'    , 'LIKE', "%{$data}%");
                                                 })
+
                                                 ->select(
                                                 
                                                     'E.id AS IdExamen',

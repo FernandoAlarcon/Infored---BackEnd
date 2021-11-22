@@ -14,7 +14,7 @@ class AccionesController extends Controller
      */
     public function index()
     {
-        //
+        // 
     }
 
     /**

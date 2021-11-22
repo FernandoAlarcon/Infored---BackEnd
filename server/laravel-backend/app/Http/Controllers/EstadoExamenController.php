@@ -371,7 +371,7 @@ class EstadoExamenController extends Controller
 
             return [ 'citas' => $getCitas ];
 
-            
+              
 
         } catch (\Exception  $e) {
             return $this->capturar($e, 'Error al consultar');            

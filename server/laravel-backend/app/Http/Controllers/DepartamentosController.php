@@ -23,7 +23,7 @@ class DepartamentosController extends Controller
 
         return [
             'departamentos' => $departamentos
-        ];
+        ]; 
     }
 
     /**

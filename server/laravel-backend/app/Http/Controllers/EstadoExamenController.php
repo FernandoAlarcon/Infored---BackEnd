@@ -39,19 +39,16 @@ class EstadoExamenController extends Controller
                                             ->where('US.id','=',$id_user) 
                                             
                                             ->select(
-                                            //'E.id AS IdExamen',
-                                            //'E.fecha_inicio AS date',
-                                            'TE.nombre AS title',                                        
-                                            DB::raw("DATE_FORMAT(E.fecha_inicio, '%a %b %c %Y %H-%i-%s') AS start" ),
-                                            DB::raw("DATE_FORMAT(E.fecha_fin,    '%D %M %n %Y %H-%i-%s') AS end"   ),
-                                            
-                                            'estado_examen.color AS color'
-
-                                            //'E.fecha_fin',
-                                            //'estado_examen.nombre AS estado',                                        
-                                            //DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"), 
-                                            //DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
-                                            //DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
+                                                'TE.nombre AS title',                                        
+                                                // DB::raw("DATE_FORMAT(E.fecha_inicio, '%a %b %c %Y %H-%i-%s') AS start" ),
+                                                // DB::raw("DATE_FORMAT(E.fecha_fin,    '%D %M %n %Y %H-%i-%s') AS end"   ),
+                                                DB::raw("DATE_FORMAT(E.fecha_inicio, '%Y-%m-%d %H:%i:%s') AS start" ),
+                                                DB::raw("DATE_FORMAT(E.fecha_fin,    '%Y-%m-%d %H:%i:%s') AS end"   ),
+                                                'estado_examen.color AS color',
+                                        
+                                                DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"), 
+                                                DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
+                                                DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                             
                                             )->orderBy('E.id','DESC')
                                             ->get();
@@ -68,18 +65,16 @@ class EstadoExamenController extends Controller
                                             ->where('US.id','=',$id_user) 
                                             
                                             ->select(
-                                            //'E.id AS IdExamen',
-                                            //'E.fecha_inicio AS date',
-                                            'TE.nombre AS title',                                        
-                                            DB::raw("DATE_FORMAT(E.fecha_inicio, '%a %b %c %Y %H-%i-%s') AS start" ),
-                                            DB::raw("DATE_FORMAT(E.fecha_fin,    '%D %M %n %Y %H-%i-%s') AS end"   ),
-                                            
-                                            'estado_examen.color AS color'
-                                            //'E.fecha_fin',
-                                            //'estado_examen.nombre AS estado',                                        
-                                            //DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"), 
-                                            //DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
-                                            //DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
+                                                'TE.nombre AS title',                                        
+                                                // DB::raw("DATE_FORMAT(E.fecha_inicio, '%a %b %c %Y %H-%i-%s') AS start" ),
+                                                // DB::raw("DATE_FORMAT(E.fecha_fin,    '%D %M %n %Y %H-%i-%s') AS end"   ),
+                                                DB::raw("DATE_FORMAT(E.fecha_inicio, '%Y-%m-%d %H:%i:%s') AS start" ),
+                                                DB::raw("DATE_FORMAT(E.fecha_fin,    '%Y-%m-%d %H:%i:%s') AS end"   ),
+                                                'estado_examen.color AS color',
+                                     
+                                                DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"), 
+                                                DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
+                                                DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                             
                                             )->orderBy('E.id','DESC')
                                             ->get();
@@ -94,20 +89,17 @@ class EstadoExamenController extends Controller
                                             ->join('users        AS US',   'US.id',                          '=', 'P2.user_id') 
                                             
                                             ->select(
-                                            //'E.id AS IdExamen',
-                                            //'E.fecha_inicio AS date',
+                                                
                                             'TE.nombre AS title',                                        
                                             // DB::raw("DATE_FORMAT(E.fecha_inicio, '%a %b %c %Y %H-%i-%s') AS start" ),
                                             // DB::raw("DATE_FORMAT(E.fecha_fin,    '%D %M %n %Y %H-%i-%s') AS end"   ),
                                             DB::raw("DATE_FORMAT(E.fecha_inicio, '%Y-%m-%d %H:%i:%s') AS start" ),
                                             DB::raw("DATE_FORMAT(E.fecha_fin,    '%Y-%m-%d %H:%i:%s') AS end"   ),
-                                            'estado_examen.color AS color'
-
-                                            //'E.fecha_fin',
-                                            //'estado_examen.nombre AS estado',                                        
-                                            //DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"), 
-                                            //DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
-                                            //DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
+                                            'estado_examen.color AS color',
+ 
+                                            DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"), 
+                                            DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
+                                            DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                             
                                             )->orderBy('E.id','DESC')
                                             ->get();

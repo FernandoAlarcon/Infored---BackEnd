@@ -24,7 +24,12 @@ class EstadoExamenController extends Controller
             $data    = $request->input('data');
             $limit   = 100;
             /// mood = 1 es para formato de calendario
-            /// mood = 2 es para formato de listar basico
+            /// mood = 2 es para formato de listar basico y/o eliminar
+
+            $cantidad = $request->input('cantidad');
+            if(!isset($cantidad)){
+                $cantidad = 5;
+            }
 
            if ( $mood == '1' ) {
                 if($roll == 'Tecnico'){
@@ -157,9 +162,8 @@ class EstadoExamenController extends Controller
                                 DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                 DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                             
-                            )->orderBy('E.id','DESC')
-                            ->limit($limit)
-                            ->get();
+                            )->orderBy('E.id','DESC') 
+                            ->paginate($cantidad);
 
                         }else{
 
@@ -189,9 +193,9 @@ class EstadoExamenController extends Controller
                                 DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                 DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                             
-                            )->orderBy('E.id','DESC')
-                            ->limit($limit)
-                            ->get();
+                            )->orderBy('E.id','DESC') 
+                            ->paginate($cantidad);
+
 
                         } //// END IF $data
                        
@@ -241,9 +245,9 @@ class EstadoExamenController extends Controller
                                                     DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                     DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                                 
-                                                )->orderBy('E.id','DESC')
-                                                ->limit($limit)
-                                                ->get();
+                                                )->orderBy('E.id','DESC') 
+                                                ->paginate($cantidad);
+
 
                         }else{
 
@@ -276,9 +280,9 @@ class EstadoExamenController extends Controller
                                                     DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                     DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                                 
-                                                )->orderBy('E.id','DESC')
-                                                ->limit($limit)
-                                                ->get();
+                                                )->orderBy('E.id','DESC') 
+                                                ->paginate($cantidad);
+
 
                         }//// END IF
 
@@ -328,9 +332,9 @@ class EstadoExamenController extends Controller
                                                     DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                     DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                                 
-                                                )->orderBy('E.id','DESC') 
-                                                ->limit($limit)
-                                                ->get();
+                                                )->orderBy('E.id','DESC')  
+                                                ->paginate($cantidad);
+
 
                         }else {
                             
@@ -360,13 +364,26 @@ class EstadoExamenController extends Controller
                                                     DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                     DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                                 
-                                                )->orderBy('E.id','DESC')
-                                                ->limit($limit)
-                                                ->get();
+                                                )->orderBy('E.id','DESC') 
+                                                ->paginate($cantidad);
+
                             
                         }/// END IF ISSET
 
                     }
+                    
+                    return [ 
+                        'pagination' => [
+                            'total'         => $getCitas->total(),
+                            'current_page'  => $getCitas->currentPage(),
+                            'per_page'      => $getCitas->perPage(),
+                            'last_page'     => $getCitas->lastPage(),
+                            'from'          => $getCitas->firstItem(),
+                            'to'            => $getCitas->lastItem(),
+                        ],
+                        'citas' => $getCitas
+                    ];
+
            }/// END IF 
 
             return [ 'citas' => $getCitas ];

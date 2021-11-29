@@ -284,7 +284,7 @@ class ExamenesController extends Controller
                                             )
                                             ->orderBy('examenes.id', 'DESC')
                                             ->take(100)
-                                            ->get();
+                                            ->paginate($cantidad);
                     }else {
                         $examen = examenes::join('personas AS P1',    'examenes.medico_id',          '=', 'P1.id') 
                                             ->join('personas      AS P2',    'examenes.tecnico_id',  '=', 'P2.id')
@@ -343,7 +343,7 @@ class ExamenesController extends Controller
                                             )
                                             ->orderBy('examenes.id', 'DESC')
                                             ->take(100)
-                                            ->get();
+                                            ->paginate($cantidad);
                     }
 
                 }else if($roll == 'Medico'){
@@ -394,7 +394,7 @@ class ExamenesController extends Controller
                                             )
                                             ->orderBy('examenes.id', 'DESC')
                                             ->take(100)
-                                            ->get();
+                                            ->paginate($cantidad);
                     }else {
                         $examen = examenes::join('personas AS P1',    'examenes.medico_id',          '=', 'P1.id') 
                                             ->join('personas      AS P2',    'examenes.tecnico_id',  '=', 'P2.id')
@@ -453,7 +453,7 @@ class ExamenesController extends Controller
                                             )
                                             ->orderBy('examenes.id', 'DESC')
                                             ->take(100)
-                                            ->get();
+                                            ->paginate($cantidad);
                     }
                     
                 }else {
@@ -502,7 +502,7 @@ class ExamenesController extends Controller
                                             )
                                             ->orderBy('examenes.id', 'DESC')
                                             ->take(100)
-                                            ->get();
+                                            ->paginate($cantidad);
                     }else { 
 
                         $examen = examenes::join('personas AS P1',    'examenes.medico_id',          '=', 'P1.id') 
@@ -559,11 +559,22 @@ class ExamenesController extends Controller
                                             )
                                             ->orderBy('examenes.id', 'DESC')
                                             ->take(100)
-                                            ->get();
+                                            ->paginate($cantidad);
                     }
                 }
 
-                return [ 'examenes' => $examen ];
+                return [ 
+                    'pagination' => [
+                        'total'         => $examen->total(),
+                        'current_page'  => $examen->currentPage(),
+                        'per_page'      => $examen->perPage(),
+                        'last_page'     => $examen->lastPage(),
+                        'from'          => $examen->firstItem(),
+                        'to'            => $examen->lastItem(),
+                    ],
+                    'examenes'          => $examen 
+                ];
+                //return [ 'examenes' => $examen ];
 
 
             } else{

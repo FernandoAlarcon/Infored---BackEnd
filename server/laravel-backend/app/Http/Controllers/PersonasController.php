@@ -30,14 +30,18 @@ class PersonasController extends Controller
             if( isset($id_roll) ){
 
                 $personas  = usersRoles::join('personas AS P', 'users_roles.user_id', '=', 'P.user_id' )  
-                ->where(   'users_roles.rol_id', '=', $id_roll )
-                ->orWhere( 'P.apellidos','LIKE', '%'.$data.'%')
-                ->where(   'P.nombres',  'LIKE', '%'.$data.'%')
-                ->where(   'users_roles.rol_id', '=', $id_roll )
+                ->join('roles AS R', 'R.id', '=', 'users_roles.rol_id' )  
+                ->where('R.name', '=', $id_roll )
+                ->where(static function ($query) use ($data) {
+                    $query->where( 'P.nombres',  'LIKE', '%'.$data.'%')
+                        ->orWhere( 'P.apellidos','LIKE', '%'.$data.'%');
+                })
+
                 ->select(
                     'P.id        AS user_id',
                     'P.nombres   AS nombre',
-                    'P.apellidos AS apellidos'
+                    'P.apellidos AS apellidos',
+                    'R.name      AS roll'
                 )->get();
             
             }elseif ( $mood == '2' ) {

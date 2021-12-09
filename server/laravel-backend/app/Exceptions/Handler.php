@@ -27,11 +27,24 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
-    /**
-     * Register the exception handling callbacks for the application.
-     *
-     * @return void
-     */
+    public function report(Throwable $exception) // <-- USE Throwable HERE
+    {
+        parent::report($exception);
+    }
+    public function render($request, Throwable $exception) // AND HERE
+    {   
+        if ($exception instanceof Tymon\JWTAuth\Exceptions\TokenExpiredException) {
+			return response()->json(['error' => 'Token has expired'], $exception->getStatusCode());
+		} elseif ($exception instanceof Tymon\JWTAuth\Exceptions\TokenInvalidException) {
+			return response()->json(['error' => 'Token is invalid'], $exception->getStatusCode());
+		} elseif ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+			return response()->json(['error' => 'Unauthorized'], 401);
+		} elseif ($exception instanceof WebsiteTokenMissingException) {
+			return response()->json(['error' => 'Unauthorized'], 401);
+		}
+        return parent::render($request, $exception);
+    }
+
     public function register()
     {
         $this->reportable(function (Throwable $e) {

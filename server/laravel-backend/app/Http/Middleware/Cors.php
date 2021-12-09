@@ -26,10 +26,14 @@ class Cors
 {
     public function handle(Request $request, Closure $next)
     {
-        //return $next($request)->header('Access-Control-Allow-Origin', 'http://localhost');
-        return $next($request)
-                ->header('Access-Control-Allow-Origin', '*')
-                ->header('Access-Control-Allow-Methods', '*')
-                ->header('Access-Control-Allow-Headers',  '*');
+        // return $next($request)
+        // ->header('Access-Control-Allow-Origin', '*')
+        // ->header('Access-Control-Allow-Methods', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS')
+        // ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        $response = $next($request);
+        $response->header('Access-Control-Allow-Methods', 'HEAD, GET, POST, PUT, DELETE');
+        $response->header('Access-Control-Allow-Headers', $request->header('Access-Control-Request-Headers'));
+        $response->header('Access-Control-Allow-Origin', '*');
+        return $response;
     }
 }

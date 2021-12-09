@@ -50,10 +50,8 @@ class ExamenEstadoAdjuntosController extends Controller
 
                     //                  )
                     //                  ->get();
-
-                    return $idExamen;
+ 
                     $examen_estados = examenEstados::where('examen_id', '=', $idExamen)->get();
-                    return $examen_estados;
                     $id_adjunto = $examen_estados[0]->id;
                     $adjunto    = examenEstadoAdjuntos::where('id_examen_estados', '=', $id_adjunto)->get();
 

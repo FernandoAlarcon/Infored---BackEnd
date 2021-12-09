@@ -28,7 +28,7 @@ class EstadoExamenController extends Controller
 
             $cantidad = $request->input('cantidad');
             if(!isset($cantidad)){
-                $cantidad = 5;
+                $cantidad = 15;
             }
 
            if ( $mood == '1' ) {
@@ -44,6 +44,7 @@ class EstadoExamenController extends Controller
                                             ->where('US.id','=',$id_user) 
                                             
                                             ->select(
+                                                'estado_examen.id AS id_examen',
                                                 'TE.nombre AS title',                                        
                                                 // DB::raw("DATE_FORMAT(E.fecha_inicio, '%a %b %c %Y %H-%i-%s') AS start" ),
                                                 // DB::raw("DATE_FORMAT(E.fecha_fin,    '%D %M %n %Y %H-%i-%s') AS end"   ),
@@ -55,7 +56,7 @@ class EstadoExamenController extends Controller
                                                 DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                 DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                             
-                                            )->orderBy('E.id','DESC')
+                                            )->orderBy('E.id','ASC')
                                             ->get();
 
                 } else if($roll == 'Medico'){
@@ -70,6 +71,7 @@ class EstadoExamenController extends Controller
                                             ->where('US.id','=',$id_user) 
                                             
                                             ->select(
+                                                'estado_examen.id AS id_examen',
                                                 'TE.nombre AS title',                                        
                                                 // DB::raw("DATE_FORMAT(E.fecha_inicio, '%a %b %c %Y %H-%i-%s') AS start" ),
                                                 // DB::raw("DATE_FORMAT(E.fecha_fin,    '%D %M %n %Y %H-%i-%s') AS end"   ),
@@ -81,7 +83,7 @@ class EstadoExamenController extends Controller
                                                 DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                 DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                             
-                                            )->orderBy('E.id','DESC')
+                                            )->orderBy('E.id','ASC')
                                             ->get();
                 }else {
 
@@ -95,6 +97,7 @@ class EstadoExamenController extends Controller
                                             
                                             ->select(
                                                 
+                                            'estado_examen.id AS id_examen',
                                             'TE.nombre AS title',                                        
                                             // DB::raw("DATE_FORMAT(E.fecha_inicio, '%a %b %c %Y %H-%i-%s') AS start" ),
                                             // DB::raw("DATE_FORMAT(E.fecha_fin,    '%D %M %n %Y %H-%i-%s') AS end"   ),
@@ -106,7 +109,7 @@ class EstadoExamenController extends Controller
                                             DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                             DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                             
-                                            )->orderBy('E.id','DESC')
+                                            )->orderBy('E.id','ASC')
                                             ->get();
                 }
            }elseif ($mood == '2') {
@@ -131,7 +134,7 @@ class EstadoExamenController extends Controller
                                       ->orWhere('P2.nombres'   , 'LIKE', "%{$data}%")
                                       ->orWhere('P1.apellidos' , 'LIKE', "%{$data}%")
                                       ->orWhere('P1.nombres'   , 'LIKE', "%{$data}%")
-                                      ->orWhere('E.descripcion'  , 'LIKE', "%{$data}%")
+                                      ->orWhere('E.ASCripcion'  , 'LIKE', "%{$data}%")
                                       ->orWhere('CL.nombre'    , 'LIKE', "%{$data}%")
                                       ->orWhere('TE.nombre'    , 'LIKE', "%{$data}%")
                                       ->orWhere('P3.dni'       , 'LIKE', "%{$data}%")
@@ -162,7 +165,7 @@ class EstadoExamenController extends Controller
                                 DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                 DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                             
-                            )->orderBy('E.id','DESC') 
+                            )->orderBy('E.id','ASC') 
                             ->paginate($cantidad);
 
                         }else{
@@ -193,7 +196,7 @@ class EstadoExamenController extends Controller
                                 DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                 DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                             
-                            )->orderBy('E.id','DESC') 
+                            )->orderBy('E.id','ASC') 
                             ->paginate($cantidad);
 
 
@@ -219,7 +222,7 @@ class EstadoExamenController extends Controller
                                                           ->orWhere('P2.nombres'   , 'LIKE', "%{$data}%")
                                                           ->orWhere('P1.apellidos' , 'LIKE', "%{$data}%")
                                                           ->orWhere('P1.nombres'   , 'LIKE', "%{$data}%")
-                                                          ->orWhere('E.descripcion'  , 'LIKE', "%{$data}%")
+                                                          ->orWhere('E.ASCripcion'  , 'LIKE', "%{$data}%")
                                                           ->orWhere('CL.nombre'    , 'LIKE', "%{$data}%")
                                                           ->orWhere('TE.nombre'    , 'LIKE', "%{$data}%")
                                                           ->orWhere('P3.dni'       , 'LIKE', "%{$data}%")
@@ -245,7 +248,7 @@ class EstadoExamenController extends Controller
                                                     DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                     DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                                 
-                                                )->orderBy('E.id','DESC') 
+                                                )->orderBy('E.id','ASC') 
                                                 ->paginate($cantidad);
 
 
@@ -280,7 +283,7 @@ class EstadoExamenController extends Controller
                                                     DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                     DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                                 
-                                                )->orderBy('E.id','DESC') 
+                                                )->orderBy('E.id','ASC') 
                                                 ->paginate($cantidad);
 
 
@@ -305,7 +308,7 @@ class EstadoExamenController extends Controller
                                                           ->orWhere('P2.nombres'    , 'LIKE', "%{$data}%")
                                                           ->orWhere('P1.apellidos'  , 'LIKE', "%{$data}%")
                                                           ->orWhere('P1.nombres'    , 'LIKE', "%{$data}%")
-                                                          ->orWhere('E.descripcion' , 'LIKE', "%{$data}%")
+                                                          ->orWhere('E.ASCripcion' , 'LIKE', "%{$data}%")
                                                           ->orWhere('CL.nombre'     , 'LIKE', "%{$data}%")
                                                           ->orWhere('TE.nombre'     , 'LIKE', "%{$data}%")
                                                           ->orWhere('P3.dni'        , 'LIKE', "%{$data}%")
@@ -332,7 +335,7 @@ class EstadoExamenController extends Controller
                                                     DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                     DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                                 
-                                                )->orderBy('E.id','DESC')  
+                                                )->orderBy('E.id','ASC')  
                                                 ->paginate($cantidad);
 
 
@@ -364,7 +367,7 @@ class EstadoExamenController extends Controller
                                                     DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                     DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                                 
-                                                )->orderBy('E.id','DESC') 
+                                                )->orderBy('E.id','ASC') 
                                                 ->paginate($cantidad);
 
                             

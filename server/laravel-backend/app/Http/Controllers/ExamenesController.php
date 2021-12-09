@@ -25,7 +25,7 @@ class ExamenesController extends Controller
 
             $cantidad = $request->input('cantidad');
             if(!isset($cantidad)){
-                $cantidad = 5;
+                $cantidad = 15;
             }
 
             if(isset($id_examen) && !isset($mood)  ){ 
@@ -70,7 +70,7 @@ class ExamenesController extends Controller
                         DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                         DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                     )
-                    ->orderBy('examenes.id', 'DESC')
+                    ->orderBy('examenes.id', 'ASC')
                     ->paginate($cantidad);
                     
                 }else{
@@ -102,7 +102,7 @@ class ExamenesController extends Controller
                         'P3.dni AS dni_paciente'
 
                     )
-                    ->orderBy('examenes.id', 'DESC')
+                    ->orderBy('examenes.id', 'ASC')
                     ->paginate($cantidad); 
 
                 }/// END IF
@@ -146,8 +146,8 @@ class ExamenesController extends Controller
                               ->orWhere('P3.correo'    , 'LIKE', "%{$data}%");
                     })
                     ->where('examenes.id_tipo_examen'  , '=' , $id_examen)
-                    ->where('examenes.id_estado_examen', '<>', '5' )
-                    ->where('examenes.id_estado_examen',  '<>' , '1' )
+                    ->where('EE.nombre', '<>', 'Programado' )
+                    ->where('EE.nombre', '<>', 'Cancelado' )
 
                     ->select(
                         'examenes.id AS IdExamen',
@@ -178,7 +178,7 @@ class ExamenesController extends Controller
                         DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                         DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                     )
-                    ->orderBy('examenes.id', 'DESC')
+                    ->orderBy('examenes.id', 'ASC')
                     ->take(100)
                     ->get();
                     
@@ -194,8 +194,8 @@ class ExamenesController extends Controller
                                         ->join('ciudades    AS CD1',  'P3.ciudad_id'       ,     '=', 'CD1.id')
 
                     ->where('examenes.id_tipo_examen'  ,  '='  , $id_examen)
-                    ->where('examenes.id_estado_examen',  '<>' , '5' )
-                    ->where('examenes.id_estado_examen',  '<>' , '1' )
+                    ->where('EE.nombre', '<>', 'Programado' )
+                    ->where('EE.nombre', '<>', 'Cancelado' )
 
                     ->select(
                         'examenes.id AS IdExamen',
@@ -226,7 +226,7 @@ class ExamenesController extends Controller
                         DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                         DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                     )
-                    ->orderBy('examenes.id', 'DESC')
+                    ->orderBy('examenes.id', 'ASC')
                     ->take(100)
                     ->get(); 
 
@@ -238,7 +238,7 @@ class ExamenesController extends Controller
 
                 if($roll == 'Tecnico'){
                     
-                    if ( isset($data) ) {
+                    if ( !isset($data) ) {
                         $examen = examenes::join('personas AS P1',    'examenes.medico_id',          '=', 'P1.id') 
                                             ->join('personas      AS P2',    'examenes.tecnico_id',  '=', 'P2.id')
                                             ->join('estado_examen AS EE',    'EE.id',                '=', 'examenes.id_estado_examen')
@@ -282,7 +282,7 @@ class ExamenesController extends Controller
                                                 DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                 DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                             )
-                                            ->orderBy('examenes.id', 'DESC')
+                                            ->orderBy('examenes.id', 'ASC')
                                             ->take(100)
                                             ->paginate($cantidad);
                     }else {
@@ -341,14 +341,14 @@ class ExamenesController extends Controller
                                                 DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                 DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                             )
-                                            ->orderBy('examenes.id', 'DESC')
+                                            ->orderBy('examenes.id', 'ASC')
                                             ->take(100)
                                             ->paginate($cantidad);
                     }
 
                 }else if($roll == 'Medico'){
 
-                    if ( isset($data) ) {
+                    if ( !isset($data) ) {
                         $examen = examenes::join('personas AS P1',    'examenes.medico_id',          '=', 'P1.id') 
                                             ->join('personas      AS P2',    'examenes.tecnico_id',  '=', 'P2.id')
                                             ->join('estado_examen AS EE',    'EE.id',                '=', 'examenes.id_estado_examen')
@@ -392,7 +392,7 @@ class ExamenesController extends Controller
                                                 DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                 DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                             )
-                                            ->orderBy('examenes.id', 'DESC')
+                                            ->orderBy('examenes.id', 'ASC')
                                             ->take(100)
                                             ->paginate($cantidad);
                     }else {
@@ -451,14 +451,14 @@ class ExamenesController extends Controller
                                                 DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                 DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                             )
-                                            ->orderBy('examenes.id', 'DESC')
+                                            ->orderBy('examenes.id', 'ASC')
                                             ->take(100)
                                             ->paginate($cantidad);
                     }
                     
                 }else {
                     
-                    if ( isset($data) ) {
+                    if ( !isset($data) ) {
 
                         $examen = examenes::join('personas AS P1',    'examenes.medico_id',          '=', 'P1.id') 
                                             ->join('personas      AS P2',    'examenes.tecnico_id',  '=', 'P2.id')
@@ -500,10 +500,10 @@ class ExamenesController extends Controller
                                                 DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                 DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                             )
-                                            ->orderBy('examenes.id', 'DESC')
+                                            ->orderBy('examenes.id', 'ASC')
                                             ->take(100)
                                             ->paginate($cantidad);
-                    }else { 
+                    }else {  
 
                         $examen = examenes::join('personas AS P1',    'examenes.medico_id',          '=', 'P1.id') 
                                             ->join('personas      AS P2',    'examenes.tecnico_id',  '=', 'P2.id')
@@ -557,7 +557,7 @@ class ExamenesController extends Controller
                                                 DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
                                                 DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
                                             )
-                                            ->orderBy('examenes.id', 'DESC')
+                                            ->orderBy('examenes.id', 'ASC')
                                             ->take(100)
                                             ->paginate($cantidad);
                     }

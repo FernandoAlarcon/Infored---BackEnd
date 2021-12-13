@@ -23,39 +23,39 @@ class ExamenEstadoAdjuntosController extends Controller
         
         if(isset($idExamen)){                      
 
-                    // $examen = examenes::join('personas AS P1',     'examenes.medico_id',   '=', 'P1.id')
-                    //                   ->join('personas AS P2',     'examenes.tecnico_id',  '=', 'P2.id')
-                    //                   ->join('personas AS P3',     'examenes.paciente_id', '=', 'P3.id')
-                    //                   ->join('tipo_examen AS TE',  'examenes.id_tipo_examen', '=', 'TE.id')
-                    //                   ->join('clinicas    AS C' ,  'examenes.id_clinica' , '=', 'C.id')
-                    //                   ->join('ciudades    AS CD1', 'P3.ciudad_id'       , '=', 'CD1.id')
+                    $examen = examenes::join('personas AS P1',     'examenes.medico_id',   '=', 'P1.id')
+                                      ->join('personas AS P2',     'examenes.tecnico_id',  '=', 'P2.id')
+                                      ->join('personas AS P3',     'examenes.paciente_id', '=', 'P3.id')
+                                      ->join('tipo_examen AS TE',  'examenes.id_tipo_examen', '=', 'TE.id')
+                                      ->join('clinicas    AS C' ,  'examenes.id_clinica' , '=', 'C.id')
+                                      ->join('ciudades    AS CD1', 'P3.ciudad_id'       , '=', 'CD1.id')
                                       
-                    //                   ->where('examenes.id','=',$idExamen)
-                    //                   ->select(
+                                      ->where('examenes.id','=',$idExamen)
+                                      ->select(
 
-                    //                     'examenes.id AS IdExamen',
-                    //                     'examenes.fecha_inicio',
-                    //                     'examenes.fecha_fin',
-                    //                     'TE.nombre AS examen',
-                    //                     'C.nombre  AS clinica',
-                    //                     'examenes.id_estado_examen',
-                    //                     'examenes.descripcion',
-                    //                     'examenes.costo_examen',
-                    //                     'CD1.nombre AS ciudad_paciente',
-                    //                     DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"),
-                    //                     DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
-                    //                     DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente"),
-                    //                     'P3.correo AS correo_paciente',
-                    //                     'P3.dni    AS dni_paciente'
+                                        'examenes.id AS IdExamen',
+                                        'examenes.fecha_inicio',
+                                        'examenes.fecha_fin',
+                                        'TE.nombre AS examen',
+                                        'C.nombre  AS clinica',
+                                        'examenes.id_estado_examen',
+                                        'examenes.descripcion',
+                                        'examenes.costo_examen',
+                                        'CD1.nombre AS ciudad_paciente',
+                                        DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"),
+                                        DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
+                                        DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente"),
+                                        'P3.correo AS correo_paciente',
+                                        'P3.dni    AS dni_paciente'
 
-                    //                  )
-                    //                  ->get();
+                                     )
+                                     ->get();
  
                     $examen_estados = examenEstados::where('examen_id', '=', $idExamen)->get();
-                    $id_adjunto = $examen_estados[0]->id;
-                    $adjunto    = examenEstadoAdjuntos::where('id_examen_estados', '=', $id_adjunto)->get();
+                    $id_adjunto     = $examen_estados[0]->id;
+                    $adjunto        = examenEstadoAdjuntos::where('id_examen_estados', '=', $id_adjunto)->get();
 
-                    return  [   //'examen'   => $examen,
+                    return  [   'examen'   => $examen[0],
                                 'adjuntos' => $adjunto,
                                 //'path'     => public_path()
                             ];

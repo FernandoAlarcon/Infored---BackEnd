@@ -28,7 +28,7 @@ class ExamenesController extends Controller
                 $cantidad = 15;
             }
 
-            if(isset($id_examen) && !isset($mood)  ){ 
+            if( isset($id_examen) && !isset($mood) ){ 
 
                 if (isset($data)) { 
 
@@ -123,112 +123,410 @@ class ExamenesController extends Controller
 
                 
                 if ( isset($data) ) { 
-                    
-                    $examen = examenes::join('personas AS P1',    'examenes.medico_id',          '=', 'P1.id') 
-                                        ->join('personas      AS P2',    'examenes.tecnico_id',  '=', 'P2.id')
-                                        ->join('estado_examen AS EE',    'EE.id',                '=', 'examenes.id_estado_examen')
-                                        ->join('personas      AS P3',    'examenes.paciente_id', '=', 'P3.id')
-                                        ->join('tipo_examen   AS TE', 'examenes.id_tipo_examen', '=', 'TE.id')
-                                        ->join('clinicas      AS C' , 'examenes.id_clinica' ,    '=', 'C.id')
-                                        ->join('ciudades      AS CD1' ,'P3.ciudad_id'       ,    '=', 'CD1.id')
 
-                    ->where(static function ($query) use ($data) {
-                        $query->where('P3.apellidos'   , 'LIKE', "%{$data}%")
-                              ->orWhere('P3.nombres'   , 'LIKE', "%{$data}%")
-                              ->orWhere('P2.apellidos' , 'LIKE', "%{$data}%")
-                              ->orWhere('P2.nombres'   , 'LIKE', "%{$data}%")
-                              ->orWhere('P1.apellidos' , 'LIKE', "%{$data}%")
-                              ->orWhere('P1.nombres'   , 'LIKE', "%{$data}%")
-                              ->orWhere('examenes.descripcion'  , 'LIKE', "%{$data}%")
-                              ->orWhere('C.nombre'     , 'LIKE', "%{$data}%")
-                              ->orWhere('TE.nombre'    , 'LIKE', "%{$data}%")
-                              ->orWhere('P3.dni'       , 'LIKE', "%{$data}%")
-                              ->orWhere('P3.correo'    , 'LIKE', "%{$data}%");
-                    })
-                    ->where('examenes.id_tipo_examen'  , '=' , $id_examen)
-                    ->where('EE.nombre', '<>', 'Programado' )
-                    ->where('EE.nombre', '<>', 'Cancelado' )
+                    if($roll == 'Tecnico'){
 
-                    ->select(
-                        'examenes.id AS IdExamen',
-                        'examenes.fecha_inicio',
-                        'examenes.fecha_fin',
-                        'TE.nombre AS examen',
-                        'TE.id     AS tipo_examen',
+                        $examen = examenes::join('personas AS P1',    'examenes.medico_id',           '=', 'P1.id') 
+                                            ->join('personas      AS P2',  'examenes.tecnico_id',     '=', 'P2.id')
+                                            ->join('estado_examen AS EE',  'EE.id',                   '=', 'examenes.id_estado_examen')
+                                            ->join('personas      AS P3',  'examenes.paciente_id',    '=', 'P3.id')
+                                            ->join('tipo_examen   AS TE',  'examenes.id_tipo_examen', '=', 'TE.id')
+                                            ->join('clinicas      AS C' ,  'examenes.id_clinica' ,    '=', 'C.id')
+                                            ->join('ciudades      AS CD1', 'P3.ciudad_id'       ,     '=', 'CD1.id')
+                                            ->join('users         AS US',  'US.id',                   '=', 'P2.user_id') 
 
-                        'C.id  AS id_clinica',
-                        'C.nombre  AS clinica',
-                        'examenes.id_estado_examen',
-                        'examenes.descripcion',
-                        'examenes.costo_examen',
+    
+                        ->where(static function ($query) use ($data) {
+                            $query->where('P3.apellidos'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('P3.nombres'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('P2.apellidos' , 'LIKE', "%{$data}%")
+                                  ->orWhere('P2.nombres'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('P1.apellidos' , 'LIKE', "%{$data}%")
+                                  ->orWhere('P1.nombres'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('examenes.descripcion'  , 'LIKE', "%{$data}%")
+                                  ->orWhere('C.nombre'     , 'LIKE', "%{$data}%")
+                                  ->orWhere('TE.nombre'    , 'LIKE', "%{$data}%")
+                                  ->orWhere('P3.dni'       , 'LIKE', "%{$data}%")
+                                  ->orWhere('P3.correo'    , 'LIKE', "%{$data}%");
+                        })
+                        ->where('examenes.id_tipo_examen'  , '=' , $id_examen)
+                        ->where('US.id','=',$id_user) 
                         
-                        'EE.color  AS color',
-                        'EE.nombre AS estado',
-                        'EE.id     AS id_estado',
-
-                        'P3.correo AS correo_paciente',
-                        'P3.dni AS dni_paciente',
-                        'CD1.nombre AS ciudad_paciente',
-                        'examenes.medico_id AS medico_id',
-                        'examenes.tecnico_id AS tecnico_id',
-                        'examenes.paciente_id AS paciente_id',
-                        'examenes.descripcion AS descripcion',
-
-                        DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"),
-                        DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
-                        DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
-                    )
-                    ->orderBy('examenes.id', 'ASC')
-                    ->take(100)
-                    ->get();
+                        ->where('EE.nombre', '<>', 'Programado' )
+                        ->where('EE.nombre', '<>', 'Cancelado' )
+    
+                        ->select(
+                            'examenes.id AS IdExamen',
+                            'examenes.fecha_inicio',
+                            'examenes.fecha_fin',
+                            'TE.nombre AS examen',
+                            'TE.id     AS tipo_examen',
+    
+                            'C.id  AS id_clinica',
+                            'C.nombre  AS clinica',
+                            'examenes.id_estado_examen',
+                            'examenes.descripcion',
+                            'examenes.costo_examen',
+                            
+                            'EE.color  AS color',
+                            'EE.nombre AS estado',
+                            'EE.id     AS id_estado',
+    
+                            'P3.correo AS correo_paciente',
+                            'P3.dni AS dni_paciente',
+                            'CD1.nombre AS ciudad_paciente',
+                            'examenes.medico_id AS medico_id',
+                            'examenes.tecnico_id AS tecnico_id',
+                            'examenes.paciente_id AS paciente_id',
+                            'examenes.descripcion AS descripcion',
+    
+                            DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"),
+                            DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
+                            DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
+                        )
+                        ->orderBy('examenes.id', 'ASC')
+                        ->take(100)
+                        ->get();
                     
-                }else{
- 
+                    }else if($roll == 'Medico') {
 
-                    $examen = examenes::join('personas AS P1',        'examenes.medico_id',      '=', 'P1.id')
+                        $examen = examenes::join('personas AS P1',    'examenes.medico_id',          '=', 'P1.id') 
+                                            ->join('personas      AS P2',    'examenes.tecnico_id',  '=', 'P2.id')
+                                            ->join('estado_examen AS EE',    'EE.id',                '=', 'examenes.id_estado_examen')
+                                            ->join('personas      AS P3',    'examenes.paciente_id', '=', 'P3.id')
+                                            ->join('tipo_examen   AS TE', 'examenes.id_tipo_examen', '=', 'TE.id')
+                                            ->join('clinicas      AS C' , 'examenes.id_clinica' ,    '=', 'C.id')
+                                            ->join('ciudades      AS CD1' ,'P3.ciudad_id'       ,    '=', 'CD1.id')
+                                            ->join('users         AS US',  'US.id',                  '=', 'P1.user_id') 
+
+    
+                        ->where(static function ($query) use ($data) {
+                            $query->where('P3.apellidos'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('P3.nombres'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('P2.apellidos' , 'LIKE', "%{$data}%")
+                                  ->orWhere('P2.nombres'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('P1.apellidos' , 'LIKE', "%{$data}%")
+                                  ->orWhere('P1.nombres'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('examenes.descripcion'  , 'LIKE', "%{$data}%")
+                                  ->orWhere('C.nombre'     , 'LIKE', "%{$data}%")
+                                  ->orWhere('TE.nombre'    , 'LIKE', "%{$data}%")
+                                  ->orWhere('P3.dni'       , 'LIKE', "%{$data}%")
+                                  ->orWhere('P3.correo'    , 'LIKE', "%{$data}%");
+                        })
+                        ->where('examenes.id_tipo_examen'  , '=' , $id_examen)
+                        ->where('US.id','=',$id_user) 
+                        
+                        ->where('EE.nombre', '<>', 'Programado' )
+                        ->where('EE.nombre', '<>', 'Cancelado' )
+    
+                        ->select(
+                            'examenes.id AS IdExamen',
+                            'examenes.fecha_inicio',
+                            'examenes.fecha_fin',
+                            'TE.nombre AS examen',
+                            'TE.id     AS tipo_examen',
+    
+                            'C.id  AS id_clinica',
+                            'C.nombre  AS clinica',
+                            'examenes.id_estado_examen',
+                            'examenes.descripcion',
+                            'examenes.costo_examen',
+                            
+                            'EE.color  AS color',
+                            'EE.nombre AS estado',
+                            'EE.id     AS id_estado',
+    
+                            'P3.correo AS correo_paciente',
+                            'P3.dni AS dni_paciente',
+                            'CD1.nombre AS ciudad_paciente',
+                            'examenes.medico_id AS medico_id',
+                            'examenes.tecnico_id AS tecnico_id',
+                            'examenes.paciente_id AS paciente_id',
+                            'examenes.descripcion AS descripcion',
+    
+                            DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"),
+                            DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
+                            DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
+                        )
+                        ->orderBy('examenes.id', 'ASC')
+                        ->take(100)
+                        ->get();
+
+                    }else {
+
+                        $examen = examenes::join('personas AS P1',    'examenes.medico_id',          '=', 'P1.id') 
+                                            ->join('personas      AS P2',    'examenes.tecnico_id',  '=', 'P2.id')
+                                            ->join('estado_examen AS EE',    'EE.id',                '=', 'examenes.id_estado_examen')
+                                            ->join('personas      AS P3',    'examenes.paciente_id', '=', 'P3.id')
+                                            ->join('tipo_examen   AS TE', 'examenes.id_tipo_examen', '=', 'TE.id')
+                                            ->join('clinicas      AS C' , 'examenes.id_clinica' ,    '=', 'C.id')
+                                            ->join('ciudades      AS CD1' ,'P3.ciudad_id'       ,    '=', 'CD1.id') 
+
+    
+                        ->where(static function ($query) use ($data) {
+                            $query->where('P3.apellidos'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('P3.nombres'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('P2.apellidos' , 'LIKE', "%{$data}%")
+                                  ->orWhere('P2.nombres'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('P1.apellidos' , 'LIKE', "%{$data}%")
+                                  ->orWhere('P1.nombres'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('examenes.descripcion'  , 'LIKE', "%{$data}%")
+                                  ->orWhere('C.nombre'     , 'LIKE', "%{$data}%")
+                                  ->orWhere('TE.nombre'    , 'LIKE', "%{$data}%")
+                                  ->orWhere('P3.dni'       , 'LIKE', "%{$data}%")
+                                  ->orWhere('P3.correo'    , 'LIKE', "%{$data}%");
+                        })
+                        ->where('examenes.id_tipo_examen'  , '=' , $id_examen)
+                         
+                        ->where('EE.nombre', '<>', 'Programado' )
+                        ->where('EE.nombre', '<>', 'Cancelado' )
+    
+                        ->select(
+                            'examenes.id AS IdExamen',
+                            'examenes.fecha_inicio',
+                            'examenes.fecha_fin',
+                            'TE.nombre AS examen',
+                            'TE.id     AS tipo_examen',
+    
+                            'C.id  AS id_clinica',
+                            'C.nombre  AS clinica',
+                            'examenes.id_estado_examen',
+                            'examenes.descripcion',
+                            'examenes.costo_examen',
+                            
+                            'EE.color  AS color',
+                            'EE.nombre AS estado',
+                            'EE.id     AS id_estado',
+    
+                            'P3.correo AS correo_paciente',
+                            'P3.dni AS dni_paciente',
+                            'CD1.nombre AS ciudad_paciente',
+                            'examenes.medico_id AS medico_id',
+                            'examenes.tecnico_id AS tecnico_id',
+                            'examenes.paciente_id AS paciente_id',
+                            'examenes.descripcion AS descripcion',
+    
+                            DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"),
+                            DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
+                            DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
+                        )
+                        ->orderBy('examenes.id', 'ASC')
+                        ->take(100)
+                        ->get();$examen = examenes::join('personas AS P1',    'examenes.medico_id',          '=', 'P1.id') 
+                                            ->join('personas      AS P2',    'examenes.tecnico_id',  '=', 'P2.id')
+                                            ->join('estado_examen AS EE',    'EE.id',                '=', 'examenes.id_estado_examen')
+                                            ->join('personas      AS P3',    'examenes.paciente_id', '=', 'P3.id')
+                                            ->join('tipo_examen   AS TE', 'examenes.id_tipo_examen', '=', 'TE.id')
+                                            ->join('clinicas      AS C' , 'examenes.id_clinica' ,    '=', 'C.id')
+                                            ->join('ciudades      AS CD1' ,'P3.ciudad_id'       ,    '=', 'CD1.id')
+                                            ->join('users         AS US',  'US.id',                  '=', 'P1.user_id') 
+
+    
+                        ->where(static function ($query) use ($data) {
+                            $query->where('P3.apellidos'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('P3.nombres'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('P2.apellidos' , 'LIKE', "%{$data}%")
+                                  ->orWhere('P2.nombres'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('P1.apellidos' , 'LIKE', "%{$data}%")
+                                  ->orWhere('P1.nombres'   , 'LIKE', "%{$data}%")
+                                  ->orWhere('examenes.descripcion'  , 'LIKE', "%{$data}%")
+                                  ->orWhere('C.nombre'     , 'LIKE', "%{$data}%")
+                                  ->orWhere('TE.nombre'    , 'LIKE', "%{$data}%")
+                                  ->orWhere('P3.dni'       , 'LIKE', "%{$data}%")
+                                  ->orWhere('P3.correo'    , 'LIKE', "%{$data}%");
+                        })
+                        ->where('examenes.id_tipo_examen'  , '=' , $id_examen)
+                         
+                        ->where('EE.nombre', '<>', 'Programado' )
+                        ->where('EE.nombre', '<>', 'Cancelado' )
+    
+                        ->select(
+                            'examenes.id AS IdExamen',
+                            'examenes.fecha_inicio',
+                            'examenes.fecha_fin',
+                            'TE.nombre AS examen',
+                            'TE.id     AS tipo_examen',
+    
+                            'C.id  AS id_clinica',
+                            'C.nombre  AS clinica',
+                            'examenes.id_estado_examen',
+                            'examenes.descripcion',
+                            'examenes.costo_examen',
+                            
+                            'EE.color  AS color',
+                            'EE.nombre AS estado',
+                            'EE.id     AS id_estado',
+    
+                            'P3.correo AS correo_paciente',
+                            'P3.dni AS dni_paciente',
+                            'CD1.nombre AS ciudad_paciente',
+                            'examenes.medico_id AS medico_id',
+                            'examenes.tecnico_id AS tecnico_id',
+                            'examenes.paciente_id AS paciente_id',
+                            'examenes.descripcion AS descripcion',
+    
+                            DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"),
+                            DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
+                            DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
+                        )
+                        ->orderBy('examenes.id', 'ASC')
+                        ->take(100)
+                        ->get();
+
+                    }
+                                        
+                }else{
+                    
+                    if($roll == 'Tecnico'){
+
+                        $examen = examenes::join('personas AS P1',        'examenes.medico_id',      '=', 'P1.id')
                                         ->join('personas AS P2',      'examenes.tecnico_id',     '=', 'P2.id')
                                         ->join('estado_examen AS EE', 'EE.id',                   '=', 'examenes.id_estado_examen')
                                         ->join('personas AS P3',      'examenes.paciente_id',    '=', 'P3.id')
                                         ->join('tipo_examen AS TE',   'examenes.id_tipo_examen', '=', 'TE.id')
                                         ->join('clinicas    AS C' ,   'examenes.id_clinica' ,    '=', 'C.id')
                                         ->join('ciudades    AS CD1',  'P3.ciudad_id'       ,     '=', 'CD1.id')
+ 
+                                        ->join('users       AS US',   'US.id',               '=', 'P2.user_id') 
 
-                    ->where('examenes.id_tipo_examen'  ,  '='  , $id_examen)
-                    ->where('EE.nombre', '<>', 'Programado' )
-                    ->where('EE.nombre', '<>', 'Cancelado' )
 
-                    ->select(
-                        'examenes.id AS IdExamen',
-                        'examenes.fecha_inicio',
-                        'examenes.fecha_fin',
-                        'TE.nombre AS examen',
-                        'TE.id     AS tipo_examen',
+                                    ->where('examenes.id_tipo_examen'  ,  '='  , $id_examen)
+                                    ->where('EE.nombre', '<>', 'Programado' )
+                                    ->where('EE.nombre', '<>', 'Cancelado' )
+                                    ->where('US.id','=',$id_user) 
 
-                        'C.id  AS id_clinica',
-                        'C.nombre  AS clinica',
-                        'examenes.id_estado_examen',
-                        'examenes.descripcion',
-                        'examenes.costo_examen',
-                        
-                        'EE.color  AS color',
-                        'EE.nombre AS estado',
-                        'EE.id     AS id_estado',
 
-                        'P3.correo AS correo_paciente',
-                        'P3.dni AS dni_paciente',
-                        'CD1.nombre AS ciudad_paciente',
-                        'examenes.medico_id AS medico_id',
-                        'examenes.tecnico_id AS tecnico_id',
-                        'examenes.paciente_id AS paciente_id',
-                        'examenes.descripcion AS descripcion',
+                                    ->select(
+                                        'examenes.id AS IdExamen',
+                                        'examenes.fecha_inicio',
+                                        'examenes.fecha_fin',
+                                        'TE.nombre AS examen',
+                                        'TE.id     AS tipo_examen',
 
-                        DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"),
-                        DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
-                        DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
-                    )
-                    ->orderBy('examenes.id', 'ASC')
-                    ->take(100)
-                    ->get(); 
+                                        'C.id  AS id_clinica',
+                                        'C.nombre  AS clinica',
+                                        'examenes.id_estado_examen',
+                                        'examenes.descripcion',
+                                        'examenes.costo_examen',
+                                        
+                                        'EE.color  AS color',
+                                        'EE.nombre AS estado',
+                                        'EE.id     AS id_estado',
+
+                                        'P3.correo AS correo_paciente',
+                                        'P3.dni AS dni_paciente',
+                                        'CD1.nombre AS ciudad_paciente',
+                                        'examenes.medico_id AS medico_id',
+                                        'examenes.tecnico_id AS tecnico_id',
+                                        'examenes.paciente_id AS paciente_id',
+                                        'examenes.descripcion AS descripcion',
+
+                                        DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"),
+                                        DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
+                                        DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
+                                    )
+                                    ->orderBy('examenes.id', 'ASC')
+                                    ->take(100)
+                                    ->get(); 
+
+                    }else if( $roll == 'Medico' ){
+
+                        $examen = examenes::join('personas AS P1',        'examenes.medico_id',      '=', 'P1.id')
+                        ->join('personas AS P2',      'examenes.tecnico_id',     '=', 'P2.id')
+                        ->join('estado_examen AS EE', 'EE.id',                   '=', 'examenes.id_estado_examen')
+                        ->join('personas AS P3',      'examenes.paciente_id',    '=', 'P3.id')
+                        ->join('tipo_examen AS TE',   'examenes.id_tipo_examen', '=', 'TE.id')
+                        ->join('clinicas    AS C' ,   'examenes.id_clinica' ,    '=', 'C.id')
+                        ->join('ciudades    AS CD1',  'P3.ciudad_id'       ,     '=', 'CD1.id')
+                        ->join('users       AS US',   'US.id',                   '=', 'P1.user_id') 
+
+                            ->where('examenes.id_tipo_examen'  ,  '='  , $id_examen)
+                            ->where('EE.nombre', '<>', 'Programado' )
+                            ->where('EE.nombre', '<>', 'Cancelado' )
+                            ->where('US.id','=',$id_user) 
+
+
+                            ->select(
+                                'examenes.id AS IdExamen',
+                                'examenes.fecha_inicio',
+                                'examenes.fecha_fin',
+                                'TE.nombre AS examen',
+                                'TE.id     AS tipo_examen',
+
+                                'C.id  AS id_clinica',
+                                'C.nombre  AS clinica',
+                                'examenes.id_estado_examen',
+                                'examenes.descripcion',
+                                'examenes.costo_examen',
+                                
+                                'EE.color  AS color',
+                                'EE.nombre AS estado',
+                                'EE.id     AS id_estado',
+
+                                'P3.correo AS correo_paciente',
+                                'P3.dni AS dni_paciente',
+                                'CD1.nombre AS ciudad_paciente',
+                                'examenes.medico_id AS medico_id',
+                                'examenes.tecnico_id AS tecnico_id',
+                                'examenes.paciente_id AS paciente_id',
+                                'examenes.descripcion AS descripcion',
+
+                                DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"),
+                                DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
+                                DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
+                            )
+                            ->orderBy('examenes.id', 'ASC')
+                            ->take(100)
+                            ->get();
+                    }else {
+
+                        $examen = examenes::join('personas AS P1',        'examenes.medico_id',      '=', 'P1.id')
+                        ->join('personas AS P2',      'examenes.tecnico_id',     '=', 'P2.id')
+                        ->join('estado_examen AS EE', 'EE.id',                   '=', 'examenes.id_estado_examen')
+                        ->join('personas AS P3',      'examenes.paciente_id',    '=', 'P3.id')
+                        ->join('tipo_examen AS TE',   'examenes.id_tipo_examen', '=', 'TE.id')
+                        ->join('clinicas    AS C' ,   'examenes.id_clinica' ,    '=', 'C.id')
+                        ->join('ciudades    AS CD1',  'P3.ciudad_id'       ,     '=', 'CD1.id') 
+
+                        ->where('examenes.id_tipo_examen'  ,  '='  , $id_examen)
+                        ->where('EE.nombre', '<>', 'Programado' )
+                        ->where('EE.nombre', '<>', 'Cancelado' ) 
+
+
+                        ->select(
+                            'examenes.id AS IdExamen',
+                            'examenes.fecha_inicio',
+                            'examenes.fecha_fin',
+                            'TE.nombre AS examen',
+                            'TE.id     AS tipo_examen',
+
+                            'C.id  AS id_clinica',
+                            'C.nombre  AS clinica',
+                            'examenes.id_estado_examen',
+                            'examenes.descripcion',
+                            'examenes.costo_examen',
+                            
+                            'EE.color  AS color',
+                            'EE.nombre AS estado',
+                            'EE.id     AS id_estado',
+
+                            'P3.correo AS correo_paciente',
+                            'P3.dni AS dni_paciente',
+                            'CD1.nombre AS ciudad_paciente',
+                            'examenes.medico_id AS medico_id',
+                            'examenes.tecnico_id AS tecnico_id',
+                            'examenes.paciente_id AS paciente_id',
+                            'examenes.descripcion AS descripcion',
+
+                            DB::raw("CONCAT(P1.nombres,' ',P1.apellidos) AS medico"),
+                            DB::raw("CONCAT(P2.nombres,' ',P2.apellidos) AS tecnico"),
+                            DB::raw("CONCAT(P3.nombres,' ',P3.apellidos) AS paciente")
+                        )
+                        ->orderBy('examenes.id', 'ASC')
+                        ->take(100)
+                        ->get(); 
+
+                    }// FINISH IF
 
                 }/// END IF   
 
@@ -396,6 +694,7 @@ class ExamenesController extends Controller
                                             ->take(100)
                                             ->paginate($cantidad);
                     }else {
+ 
                         $examen = examenes::join('personas AS P1',    'examenes.medico_id',          '=', 'P1.id') 
                                             ->join('personas      AS P2',    'examenes.tecnico_id',  '=', 'P2.id')
                                             ->join('estado_examen AS EE',    'EE.id',                '=', 'examenes.id_estado_examen')

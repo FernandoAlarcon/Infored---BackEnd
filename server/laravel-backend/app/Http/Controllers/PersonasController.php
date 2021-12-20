@@ -22,10 +22,14 @@ class PersonasController extends Controller
     {
         try {
             
-            $id_roll = $request->input('id_roll');
-            $data    = $request->input('data');
-            $mood    = $request->input('mood');
-            //return   $Permisos       = usersRoles::where('rol_id', $id_roll)->get();
+            $id_roll  = $request->input('id_roll');
+            $data     = $request->input('data');
+            $mood     = $request->input('mood');
+            
+            $cantidad = $request->input('cantidad');
+            if(!isset($cantidad)){
+                $cantidad = 15;
+            }
 
             if( isset($id_roll) ){
 
@@ -45,31 +49,29 @@ class PersonasController extends Controller
                 )->get();
             
             }elseif ( $mood == '2' ) {
-                //return$mood    = $request->input('mood');
                 
                 if( isset($data) ){
 
-                    $personas = personas::
-                                    join('users           AS U'     , 'personas.user_id',    '=', 'U.id')
-                                    ->join('users_roles     AS UR'    , 'UR.user_id',          '=', 'U.id')
-                                    ->join('roles           AS RL'    , 'RL.id',               '=', 'UR.rol_id')
-                                    ->join('tipo_documento  AS TD'    , 'TD.id',               '=', 'personas.tipo_documento_id')
+                    $personas = personas::join('users           AS U'     , 'personas.user_id',    '=', 'U.id')
+                                        ->join('users_roles     AS UR'    , 'UR.user_id',          '=', 'U.id')
+                                        ->join('roles           AS RL'    , 'RL.id',               '=', 'UR.rol_id')
+                                        ->join('tipo_documento  AS TD'    , 'TD.id',               '=', 'personas.tipo_documento_id')
 
                                     ->where(static function ($query) use ($data) {
-                                        $query >where('U.name'                       , 'LIKE', "%{$data}%")
-                                              ->orWhere('personas.nombres'           , 'LIKE', "%{$data}%")
-                                              ->orWhere('personas.apellidos'         , 'LIKE', "%{$data}%")
-                                              ->orWhere('personas.dni'               , 'LIKE', "%{$data}%")
-                                              ->orWhere('personas.telefono'          , 'LIKE', "%{$data}%")
-                                              ->orWhere('personas.correo'            , 'LIKE', "%{$data}%")
-                                              ->orWhere('personas.direccion'         , 'LIKE', "%{$data}%")
-                                              ->orWhere('personas.tipo_sangre'       , 'LIKE', "%{$data}%")
-                                              ->orWhere('personas.descripcion'       , 'LIKE', "%{$data}%")
-                                              ->orWhere('personas.fecha_nacimiento'  , 'LIKE', "%{$data}%")
-                                              ->orWhere('TD.nombre'                  , 'LIKE', "%{$data}%")
-                                              ->orWhere('RL.name'                    , 'LIKE', "%{$data}%");
+                                         $query->where('U.name'                     , 'LIKE', "%{$data}%")
+                                               ->orWhere('personas.nombres'           , 'LIKE', "%{$data}%")
+                                               ->orWhere('personas.apellidos'         , 'LIKE', "%{$data}%")
+                                               ->orWhere('personas.dni'               , 'LIKE', "%{$data}%")
+                                               ->orWhere('personas.telefono'          , 'LIKE', "%{$data}%")
+                                               ->orWhere('personas.correo'            , 'LIKE', "%{$data}%")
+                                               ->orWhere('personas.direccion'         , 'LIKE', "%{$data}%")
+                                               ->orWhere('personas.tipo_sangre'       , 'LIKE', "%{$data}%")
+                                               ->orWhere('personas.descripcion'       , 'LIKE', "%{$data}%")
+                                               ->orWhere('personas.fecha_nacimiento'  , 'LIKE', "%{$data}%")
+                                               ->orWhere('TD.nombre'                  , 'LIKE', "%{$data}%")
+                                               ->orWhere('RL.name'                    , 'LIKE', "%{$data}%");
                                     })
-
+                                    
                                     ->select(
                                         'U.id        AS Id_User',
                                         'U.name      AS Username',
@@ -89,50 +91,55 @@ class PersonasController extends Controller
                                     )
                                     ->take(100)
                                     ->orderBy('Id_User','DESC')
-
-                                    ->get();
+                                    ->paginate($cantidad);
 
                 }else{
 
-                    //return $personas = personas::join('users           AS U'     , 'personas.user_id',    '=', 'U.id')->join('users_roles    AS UR'    , 'U.id',         '=', 'UR.user_id')->get();
-
                     $personas = personas::join('users           AS U'     , 'personas.user_id',    '=', 'U.id')
                                         ->join('users_roles     AS UR'    , 'UR.user_id',          '=', 'U.id')
-                                    
-                                    ->join('roles           AS RL'    , 'RL.id',               '=', 'UR.rol_id')
-                                    ->join('tipo_documento  AS TD'    , 'TD.id',               '=', 'personas.tipo_documento_id')
-                                    ->select(
-                                        
-                                        'U.id        AS Id_User',
-                                        'U.name      AS Username',
-                                        'personas.nombres     AS NombreUser',
-                                        'personas.apellidos   AS ApellidoUser',
+                                        ->join('roles           AS RL'    , 'RL.id',               '=', 'UR.rol_id')
+                                        ->join('tipo_documento  AS TD'    , 'TD.id',               '=', 'personas.tipo_documento_id')
+                                        ->select(
 
-                                        'personas.dni       AS Documento',
-                                        'personas.telefono  AS Telefono',
-                                        'personas.correo    AS Correo',
-                                        'personas.direccion AS Direccion',
-                                        'personas.tipo_sangre',
-                                        'personas.descripcion',
-                                        'personas.fecha_nacimiento',
-                                        'TD.nombre AS TipoDocumento',
-                                        'RL.name   AS Roll',
-                                        'RL.id     AS Id_roll'
-                                    )
-                                    ->take(100)
-                                    ->orderBy('Id_User','DESC')
-                                    ->get();
+                                            'U.id        AS Id_User',
+                                            'U.name      AS Username',
+                                            'personas.nombres     AS NombreUser',
+                                            'personas.apellidos   AS ApellidoUser',
+
+                                            'personas.dni       AS Documento',
+                                            'personas.telefono  AS Telefono',
+                                            'personas.correo    AS Correo',
+                                            'personas.direccion AS Direccion',
+                                            'personas.tipo_sangre',
+                                            'personas.descripcion',
+                                            'personas.fecha_nacimiento',
+                                            'TD.nombre AS TipoDocumento',
+                                            'RL.name   AS Roll',
+                                            'RL.id     AS Id_roll'
+
+                                        )
+                                        ->take(100)
+                                        ->orderBy('Id_User','DESC')
+                                        ->paginate($cantidad);                                        
 
                 }/// END IF
 
+                return [ 
+                    'pagination' => [
+                        'total'         => $personas->total(),
+                        'current_page'  => $personas->currentPage(),
+                        'per_page'      => $personas->perPage(),
+                        'last_page'     => $personas->lastPage(),
+                        'from'          => $personas->firstItem(),
+                        'to'            => $personas->lastItem(),
+                    ],
+                    'personas'          => $personas 
+                ];
                 
 
             
             }elseif ( $mood == '3' ) {
                 
-                //$personas = personas::all();
-               // $personas = personas::join('users           AS U'     , 'personas.user_id',    '=', 'U.id')->get();
-
                 $personas = personas::join('users           AS U'     , 'personas.user_id',    '=', 'U.id')
                 ->join('users_roles     AS UR'    , 'UR.user_id',          '=', 'U.id')
                 ->join('roles           AS RL'    , 'RL.id',               '=', 'UR.rol_id')
@@ -157,8 +164,8 @@ class PersonasController extends Controller
                 )
                 //->take(100)
                 ->orderBy('Id_User','DESC')
-
                 ->get();
+
             
 
             }else{
